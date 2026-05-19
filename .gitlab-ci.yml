@@ -1,0 +1,33 @@
+# CI for the voska/multica fork.
+#
+# Two responsibilities (only one defined today):
+#  1. Daily mirror from github.com/multica-ai/multica with auto-merge-when-clean.
+#
+# The mirror job runs ONLY on scheduled pipelines so manual pushes don't
+# accidentally trigger force-updates of the upstream branch.
+
+mirror-upstream:
+  stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $JOB == "mirror"
+    - if: $CI_PIPELINE_SOURCE == "web" && $JOB == "mirror"
+  image: alpine:3.20
+  variables:
+    GIT_STRATEGY: clone
+    GIT_DEPTH: 0
+    GIT_AUTHOR_NAME: "voska-bot"
+    GIT_AUTHOR_EMAIL: "bot@voska.org"
+    GIT_COMMITTER_NAME: "voska-bot"
+    GIT_COMMITTER_EMAIL: "bot@voska.org"
+    UPSTREAM_URL: "https://github.com/multica-ai/multica.git"
+  before_script:
+    - apk add --no-cache git openssh-client bash
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - echo "$SSH_DEPLOY_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+    - ssh-keyscan -H git.voska.org >> ~/.ssh/known_hosts 2>/dev/null
+    - git config --global user.name  "$GIT_AUTHOR_NAME"
+    - git config --global user.email "$GIT_AUTHOR_EMAIL"
+    # Replace the HTTPS origin (added by GitLab) with SSH so our deploy key works.
+    - git remote set-url origin "git@git.voska.org:${CI_PROJECT_PATH}.git"
+  script:
+    - bash .gitlab/mirror-upstream.sh
