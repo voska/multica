@@ -40,8 +40,10 @@ echo "::endgroup::"
 git update-ref "refs/heads/$UPSTREAM_BRANCH" "refs/remotes/upstream/main"
 
 # 2. Check out main, try to merge upstream.
-git checkout "$ORIGIN_BRANCH"
-git reset --hard "origin/$ORIGIN_BRANCH"
+# `-B` recreates the local branch even if a remote-tracking ref of the same name
+# exists (otherwise `git checkout main` is ambiguous once both `origin/main` and
+# `upstream/main` are present).
+git checkout -B "$ORIGIN_BRANCH" "origin/$ORIGIN_BRANCH"
 
 LOCAL_HASH=$(git rev-parse HEAD)
 UPSTREAM_HASH=$(git rev-parse "refs/heads/$UPSTREAM_BRANCH")
