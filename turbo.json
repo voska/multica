@@ -36,6 +36,26 @@
     },
     "lint": {
       "dependsOn": ["^typecheck"]
+    },
+    "@multica/ios#codegen": {
+      "inputs": ["scripts/codegen-types.mjs", "../../packages/core/types/**/*.ts"],
+      "outputs": ["Multica/Models/Generated.swift"]
+    },
+    "@multica/ios#generate": {
+      "dependsOn": ["@multica/ios#codegen"],
+      "inputs": ["project.yml", "Multica/**", "MulticaTests/**"],
+      "outputs": ["Multica.xcodeproj/**"]
+    },
+    "@multica/ios#build": {
+      "dependsOn": ["@multica/ios#generate"],
+      "inputs": ["project.yml", "Multica/**", "MulticaTests/**"],
+      "outputs": ["build/**", "Multica.xcodeproj/**"],
+      "cache": false
+    },
+    "@multica/ios#test": {
+      "dependsOn": ["@multica/ios#generate"],
+      "inputs": ["project.yml", "Multica/**", "MulticaTests/**"],
+      "cache": false
     }
   }
 }

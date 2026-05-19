@@ -1,0 +1,15 @@
+{
+  "name": "@multica/ios",
+  "version": "0.4.0",
+  "private": true,
+  "description": "Multica iOS — native SwiftUI client for the Multica platform.",
+  "scripts": {
+    "codegen": "node scripts/codegen-types.mjs",
+    "generate": "xcodegen generate",
+    "build": "pnpm run generate && xcodebuild -project Multica.xcodeproj -scheme Multica -destination 'generic/platform=iOS' -configuration Debug build CODE_SIGNING_ALLOWED=NO",
+    "build:device": "pnpm run generate && xcodebuild -project Multica.xcodeproj -scheme Multica -destination 'platform=iOS,id=00008140-000265DC20E3C01C' -configuration Debug -allowProvisioningUpdates -derivedDataPath build/ build",
+    "test": "pnpm run generate && xcodebuild test -project Multica.xcodeproj -scheme Multica -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -quiet CODE_SIGNING_ALLOWED=NO",
+    "clean": "rm -rf build build-sim Multica.xcodeproj"
+  },
+  "license": "UNLICENSED"
+}
