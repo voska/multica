@@ -39,7 +39,8 @@ jobs:
           git diff --exit-code -- packages/core/paths/reserved-slugs.ts
 
       - name: Build, type check, lint, and test
-        run: pnpm exec turbo build typecheck lint test --filter='!@multica/docs'
+        # @multica/ios needs the macOS toolchain (xcodegen); skip on Linux runners.
+        run: pnpm exec turbo build typecheck lint test --filter='!@multica/docs' --filter='!@multica/ios'
 
   backend:
     runs-on: ubuntu-latest
